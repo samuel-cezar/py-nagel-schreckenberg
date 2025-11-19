@@ -1,16 +1,15 @@
 import random
-import numpy as np
 from collections import deque
 
 # ============================================
 # PARÂMETROS DE CONFIGURAÇÃO
 # ============================================
-COMPRIMENTO_DA_ESTRADA = 1000  # Número de células na estrada
-NUM_VEICULOS = 100  # Número inicial de veículos
+COMPRIMENTO_DA_ESTRADA = 1_000_000  # Número de células na estrada
+NUM_VEICULOS = 1_000  # Número inicial de veículos
 VELOCIDADE_MAXIMA = 5  # Velocidade máxima (células por passo de tempo)
-PROBABILIDADE_DESACELERAR = 0.3  # Probabilidade de desaceleração aleatória
+PROBABILIDADE_DESACELERAR = 0.5  # Probabilidade de desaceleração aleatória
 PASSOS_DE_TEMPO = 100  # Número de passos de simulação
-TAXA_ENTRADA = 0.3  # Probabilidade de um novo carro entrar por passo de tempo
+TAXA_ENTRADA = 0.5  # Probabilidade de um novo carro entrar por passo de tempo
 LIMIAR_CONGESTIONAMENTO = 5  # Carros lentos consecutivos para detectar um congestionamento
 
 # Faixa inicial de velocidade (km/h convertida para células/passo)
@@ -20,13 +19,13 @@ VELOCIDADE_INICIAL_MINIMA = 2
 VELOCIDADE_INICIAL_MAXIMA = 3
 
 # ============================================
-# MODELO DE NAGEL-SCHRECKENBERG
+# MODELO DE NAGEL-SCHRECKENBERG (SEQUENCIAL)
 # ============================================
 
-class ModeloNagelSchreckenberg:
+class ModeloNagelSchreckenbergSequencial:
     def __init__(self):
-        # Estrada representada como array: -1 = vazio, >=0 = velocidade do veículo
-        self.estrada = np.full(COMPRIMENTO_DA_ESTRADA, -1, dtype=int)
+        # Estrada representada como lista: -1 = vazio, >=0 = velocidade do veículo
+        self.estrada = [-1] * COMPRIMENTO_DA_ESTRADA
         self.passo_de_tempo = 0
 
         # Rastreamento de estatísticas
@@ -79,7 +78,7 @@ class ModeloNagelSchreckenberg:
 
     def _etapa_movimento(self, nova_estrada):
         """Etapa 4: Mover veículos para frente com base em sua velocidade"""
-        estrada_final = np.full(COMPRIMENTO_DA_ESTRADA, -1, dtype=int)
+        estrada_final = [-1] * COMPRIMENTO_DA_ESTRADA
 
         for i in range(COMPRIMENTO_DA_ESTRADA):
             if nova_estrada[i] != -1:
@@ -128,7 +127,7 @@ class ModeloNagelSchreckenberg:
     def passo(self):
         """Executar um passo de tempo do modelo NS"""
         # Criar cópia de trabalho para atualizações
-        nova_estrada = np.copy(self.estrada)
+        nova_estrada = self.estrada.copy()
 
         # Aplicar regras do modelo NS
         self._etapa_aceleracao(nova_estrada)
@@ -177,9 +176,9 @@ class ModeloNagelSchreckenberg:
 # ============================================
 
 def executar_simulacao():
-    """Executar a simulação completa do tráfego NS"""
+    """Executar a simulação completa do tráfego NS (Sequencial)"""
     print("=" * 80)
-    print("SIMULAÇÃO DE TRÁFEGO NAGEL-SCHRECKENBERG (Sequencial)")
+    print("SIMULAÇÃO DE TRÁFEGO NAGEL-SCHRECKENBERG (Sequencial - Python Nativo)")
     print("=" * 80)
     print(f"Comprimento da Estrada: {COMPRIMENTO_DA_ESTRADA} células")
     print(f"Veículos Iniciais: {NUM_VEICULOS}")
@@ -191,7 +190,7 @@ def executar_simulacao():
     print()
 
     # Criar modelo
-    modelo = ModeloNagelSchreckenberg()
+    modelo = ModeloNagelSchreckenbergSequencial()
 
     # Executar simulação
     print("Iniciando simulação...\n")
